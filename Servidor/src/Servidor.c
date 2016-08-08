@@ -8,10 +8,12 @@
  ============================================================================
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "Servidor.h"
+
+t_config_server ServerConfig;
+
 
 int main(void) {
-	puts("CPU Lector"); /* prints CPU Lector */
-	return EXIT_SUCCESS;
+cargarConfiguracion("SERVER.cfg",ServerConfig);
+return EXIT_SUCCESS;
 }
