@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
@@ -25,5 +24,9 @@
 #include <errno.h>
 #include <signal.h>
 #include <pthread.h>
+
+int conectarConServer(char *, int);
+int IniciarSocketServidor(int);
+int AceptarConexionCliente(int);
 
 #endif /* CONEXIONES_H_ */

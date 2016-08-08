@@ -5,6 +5,7 @@
  *      Author: utnso
  */
 
+#include "Mensajes.h"
 
 char* mensaje_serializer(mensaje_t* self, int16_t* length) {
 	char *serialized = malloc(sizeof(self->tipoMensaje) + sizeof(self->logitudMensaje));
