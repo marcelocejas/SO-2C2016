@@ -71,49 +71,56 @@ int recibirMsjCompleto(int socketEmisor, char* buffer, int tamanio) {
 }
 
 int enviarMsjConEncabezado(int socketDestino, char* msj, t_msjCabecera msjCabecera) {
-	int totalWrite = 0;
+	int totalEnviado = 0;
 
 	if ((socketDestino == -1) || (socketDestino < 1))
 		return -1;
 
-	char* buffer = malloc(tamanio + sizeof(t_msjCabecera));
-	memcpy(buffer, &TipoMsj, sizeof(int));
-	memcpy(buffer + sizeof(uint32_t), &sender, sizeof(uint32_t));
-	memcpy(buffer + (2 * sizeof(uint32_t)), &socketDestino, sizeof(uint32_t));
-	memcpy(buffer + (3 * sizeof(uint32_t)), ptrBuffer, size);
+	char* buffer = malloc(sizeof(t_msjCabecera));
+	memcpy(buffer, &msjCabecera.logitudMensaje, sizeof(int));
+	memcpy(buffer + sizeof(int), &msjCabecera.tipoMensaje, sizeof(int));
 
-	totalWrite = sendCompleteMsj(socketDestino, buffer, socketDestino + (3 * sizeof(uint32_t)));
+	totalEnviado = enviarMsjCompleto(socketDestino, buffer, sizeof(t_msjCabecera));
+	if(totalEnviado != sizeof(t_msjCabecera)){
+		printf("Error enviando cabecera de mensaje.");
+		totalEnviado = -1;
+	}
+	else{
+		totalEnviado = enviarMsjCompleto(socketDestino, msj, msjCabecera.logitudMensaje);
+		if(totalEnviado != msjCabecera.logitudMensaje){
+			totalEnviado = -1;
+			printf("Error enviando mensaje principal.");
+		}
+	}
 	free(buffer);
 
-	return totalWrite;
+	return totalEnviado;
 }
 
-int enviarMsjCompleto(int ptrDestination, char* buffer, int size) {
-	int totalWrite = 0, aux = 0;
+int enviarMsjCompleto(int socketDestino, char* buffer, int longitudMensaje) {
+	int totalEnviado = 0, aux = 0;
 
-	while (totalWrite < size && totalWrite != -1) {
-		aux = send(ptrDestination, buffer + totalWrite, size - totalWrite, 0);
+	while (totalEnviado < longitudMensaje && totalEnviado != -1) {
+		aux = send(socketDestino, buffer + totalEnviado, longitudMensaje - totalEnviado, 0);
 		if (aux > 0) {
 
-			totalWrite = totalWrite + aux;
+			totalEnviado = totalEnviado + aux;
 		} else {
 
 			if (aux == 0)
-				return totalWrite;
+				return totalEnviado;
 			else
 				/*switch (errno) {
 				case EINTR:
 				case EAGAIN:
 					usleep(100);
 					break;
-				default:
-					totalWrite = -1;
-
-				}*/
-				;
+				default:*/
+				totalEnviado = -1;
+				//}
 		}
 	}
-	return totalWrite;
+	return totalEnviado;
 }
 
 char* mensaje_serializer(mensaje_t* self, int16_t* length) {

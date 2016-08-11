@@ -16,11 +16,15 @@ int main(void) {
 	char* ConfigPath = "SERVER.cfg";
 	cargarConfiguracion(ConfigPath, ServerConfig);
 	int socketServer = IniciarSocketServidor(ServerConfig->puerto);
-	if(socketServer == -1){
+	if (socketServer == -1) {
 		printf("Error creando socket servidor");
 	}
-	if (AceptarConexionCliente(socketServer) == -1) {
+	int socketCliente = AceptarConexionCliente(socketServer);
+	if (socketCliente == -1) {
 		printf("Error aceptanco conexion.");
+	}
+	if (recibirMsjConEncabezado(socketCliente) == -1) {
+		printf("Error recibiendo mensaje.");
 	}
 	finalizarConfig();
 	return EXIT_SUCCESS;
