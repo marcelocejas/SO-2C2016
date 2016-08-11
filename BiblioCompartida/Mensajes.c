@@ -34,7 +34,7 @@ char* recibirMsjConEncabezado(int socketEmisor) {
 	}
 	free(buffer);
 
-	if ((totalLeido = receiveCompleteMsj(socket, buffer, msjCabecera.logitudMensaje)) < 0) {
+	if ((totalLeido = recibirMsjCompleto(socket, buffer, msjCabecera.logitudMensaje)) < 0) {
 		free(buffer);
 		return -1;
 	}
@@ -45,14 +45,13 @@ char* recibirMsjConEncabezado(int socketEmisor) {
 	return buffer;
 }
 
+int recibirMsjCompleto(int socketEmisor, char* buffer, int tamanio) {
+	int totalLeido = 0, aux = 0;
 
-int recibirMsjCompleto(int ptrSender, char* buffer, int size) {
-	int totalRead = 0, aux = 0;
-
-	while (totalRead < size && totalRead != -1) {
-		aux = recv(ptrSender, buffer + totalRead, size - totalRead, 0);
+	while (totalLeido < tamanio && totalLeido != -1) {
+		aux = recv(socketEmisor, buffer + totalLeido, tamanio - totalLeido, 0);
 		if (aux > 0) {
-			totalRead = totalRead + aux;
+			totalLeido = totalLeido + aux;
 		} else {
 			if (aux == 0)
 				break;
@@ -63,27 +62,27 @@ int recibirMsjCompleto(int ptrSender, char* buffer, int size) {
 					usleep(100);
 					break;
 				default:*/
-					totalRead = -1;
+				totalLeido = -1;
 				//}
 			}
 		}
 	}
-	return totalRead;
+	return totalLeido;
 }
 
-int enviarMsjConEncabezado(int ptrDestination, char* ptrBuffer, uint32_t size, uint32_t operation, uint32_t sender) {
+int enviarMsjConEncabezado(int socketDestino, char* msj, t_msjCabecera msjCabecera) {
 	int totalWrite = 0;
 
-	if ((ptrDestination == -1) || (size < 1))
+	if ((socketDestino == -1) || (socketDestino < 1))
 		return -1;
 
-	char* buffer = malloc(size + (3 * sizeof(uint32_t)));
-	memcpy(buffer, &operation, sizeof(uint32_t));
+	char* buffer = malloc(tamanio + sizeof(t_msjCabecera));
+	memcpy(buffer, &TipoMsj, sizeof(int));
 	memcpy(buffer + sizeof(uint32_t), &sender, sizeof(uint32_t));
-	memcpy(buffer + (2 * sizeof(uint32_t)), &size, sizeof(uint32_t));
+	memcpy(buffer + (2 * sizeof(uint32_t)), &socketDestino, sizeof(uint32_t));
 	memcpy(buffer + (3 * sizeof(uint32_t)), ptrBuffer, size);
 
-	totalWrite = sendCompleteMsj(ptrDestination, buffer, size + (3 * sizeof(uint32_t)));
+	totalWrite = sendCompleteMsj(socketDestino, buffer, socketDestino + (3 * sizeof(uint32_t)));
 	free(buffer);
 
 	return totalWrite;
