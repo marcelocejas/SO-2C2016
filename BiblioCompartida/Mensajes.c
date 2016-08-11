@@ -7,36 +7,30 @@
 
 #include "Mensajes.h"
 
-typedef struct{
-	int unsigned tipoMensaje;
-	int unsigned logitudMensaje;
-}__attribute__((__packed__)) t_msjCabecera;
-
 char* recibirMsjConEncabezado(int socketEmisor) {
 	int totalLeido = 0;
 	t_msjCabecera msjCabecera;
 
-	int msjTamanio = malloc(sizeof(msjCabecera));
-	char* buffer = msjTamanio;
+	int msjTamanio = sizeof(msjCabecera);
+	char* buffer = malloc(msjTamanio);
 
-	if ((socket < 0) || (buffer == NULL)){
+	if ((socketEmisor < 0) || (buffer == NULL)){
 	printf("Error inicando el buffer para la cabecera.");
-		return -1;
+		return NULL;
 	}
 
 	if ((totalLeido = recibirMsjCompleto(socketEmisor, buffer, msjTamanio)) > 0) {
-		memcpy(msjCabecera.logitudMensaje, buffer, sizeof(int));
-		memcpy(msjCabecera.tipoMensaje, buffer + sizeof(int), sizeof(int));
+		msjCabecera = desempaquetarCabecera(buffer);
 	} else {
 		printf("Error recibiendo msj cabecera");
 		free(buffer);
-		return -1;
+		return NULL;
 	}
-	free(buffer);
 
-	if ((totalLeido = recibirMsjCompleto(socket, buffer, msjCabecera.logitudMensaje)) < 0) {
+	buffer = realloc(msjCabecera.logitudMensaje);
+	if ((totalLeido = recibirMsjCompleto(socketEmisor, buffer, msjCabecera.logitudMensaje)) < 0) {
 		free(buffer);
-		return -1;
+		return NULL;
 	}
 
 	if (totalLeido != msjCabecera.logitudMensaje)
@@ -56,14 +50,14 @@ int recibirMsjCompleto(int socketEmisor, char* buffer, int tamanio) {
 			if (aux == 0)
 				break;
 			if (aux == -1) {
-				/*switch (errno) {
+				switch (errno) {
 				case EINTR:
 				case EAGAIN:
 					usleep(100);
 					break;
-				default:*/
+				default:
 				totalLeido = -1;
-				//}
+				}
 			}
 		}
 	}
@@ -76,11 +70,11 @@ int enviarMsjConEncabezado(int socketDestino, char* msj, t_msjCabecera msjCabece
 	if ((socketDestino == -1) || (socketDestino < 1))
 		return -1;
 
-	char* buffer = malloc(sizeof(t_msjCabecera));
-	memcpy(buffer, &msjCabecera.logitudMensaje, sizeof(int));
-	memcpy(buffer + sizeof(int), &msjCabecera.tipoMensaje, sizeof(int));
+	char* buffer;
+	int16_t* largoBuffer;
+	buffer = empaquetarCabecera(msjCabecera, largoBuffer);
 
-	totalEnviado = enviarMsjCompleto(socketDestino, buffer, sizeof(t_msjCabecera));
+	totalEnviado = enviarMsjCompleto(socketDestino, buffer, largoBuffer);
 	if(totalEnviado != sizeof(t_msjCabecera)){
 		printf("Error enviando cabecera de mensaje.");
 		totalEnviado = -1;
@@ -110,38 +104,38 @@ int enviarMsjCompleto(int socketDestino, char* buffer, int longitudMensaje) {
 			if (aux == 0)
 				return totalEnviado;
 			else
-				/*switch (errno) {
+				switch (errno) {
 				case EINTR:
 				case EAGAIN:
 					usleep(100);
 					break;
-				default:*/
+				default:
 				totalEnviado = -1;
-				//}
+				}
 		}
 	}
 	return totalEnviado;
 }
 
-char* mensaje_serializer(mensaje_t* self, int16_t* length) {
-	char *serialized = malloc(sizeof(self->tipoMensaje) + sizeof(self->logitudMensaje));
+char* empaquetarCabecera(t_msjCabecera* mensaje, int16_t* largo) {
+	char *empaquetado = malloc(sizeof(mensaje->tipoMensaje) + sizeof(mensaje->logitudMensaje));
 
 	int offset = 0, tmp_size = 0;
-	memcpy(serialized + offset, &self->tipoMensaje, tmp_size = sizeof(self->tipoMensaje));
+	memcpy(empaquetado + offset, &mensaje->tipoMensaje, tmp_size = sizeof(mensaje->tipoMensaje));
 	offset = tmp_size;
-	memcpy(serialized + offset, &self->logitudMensaje, tmp_size = sizeof(self->logitudMensaje));
+	memcpy(empaquetado + offset, &mensaje->logitudMensaje, tmp_size = sizeof(mensaje->logitudMensaje));
 	offset += tmp_size;
 
 	offset += tmp_size;
-	*length = offset;
-	return serialized;
+	*largo = offset;
+	return empaquetado;
 }
 
-mensaje_t* mensaje_deserializer(char* serialized) {
-	mensaje_t* self = malloc(sizeof(mensaje_t));
+t_msjCabecera* desempaquetarCabecera(char* empaquetado) {
+	t_msjCabecera* mensaje = malloc(sizeof(t_msjCabecera));
 	int offset = 0, tmp_len = 0;
-	memcpy(&self->tipoMensaje, serialized + offset, tmp_len = sizeof(self->tipoMensaje));
+	memcpy(&mensaje->tipoMensaje, empaquetado + offset, tmp_len = sizeof(mensaje->tipoMensaje));
 	offset = tmp_len;
-	memcpy(&self->logitudMensaje, serialized + offset, tmp_len = sizeof(self->logitudMensaje));
-	return self;
+	memcpy(&mensaje->logitudMensaje, empaquetado + offset, tmp_len = sizeof(mensaje->logitudMensaje));
+	return mensaje;
 }
