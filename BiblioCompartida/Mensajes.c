@@ -9,7 +9,7 @@
 
 char* recibirMsjConEncabezado(int socketEmisor) {
 	int totalLeido = 0;
-	t_msjCabecera msjCabecera;
+	t_msjCabecera* msjCabecera;
 
 	int msjTamanio = sizeof(msjCabecera);
 	char* buffer = malloc(msjTamanio);
@@ -27,13 +27,13 @@ char* recibirMsjConEncabezado(int socketEmisor) {
 		return NULL;
 	}
 
-	buffer = realloc(msjCabecera.logitudMensaje);
-	if ((totalLeido = recibirMsjCompleto(socketEmisor, buffer, msjCabecera.logitudMensaje)) < 0) {
+	buffer = malloc(msjCabecera->logitudMensaje);
+	if ((totalLeido = recibirMsjCompleto(socketEmisor, buffer, msjCabecera->logitudMensaje)) < 0) {
 		free(buffer);
 		return NULL;
 	}
 
-	if (totalLeido != msjCabecera.logitudMensaje)
+	if (totalLeido != msjCabecera->logitudMensaje)
 		printf("Mensaje recibido incompleto.");
 
 	return buffer;
@@ -64,24 +64,24 @@ int recibirMsjCompleto(int socketEmisor, char* buffer, int tamanio) {
 	return totalLeido;
 }
 
-int enviarMsjConEncabezado(int socketDestino, char* msj, t_msjCabecera msjCabecera) {
+int enviarMsjConEncabezado(int socketDestino, char* msj, t_msjCabecera* msjCabecera) {
 	int totalEnviado = 0;
 
 	if ((socketDestino == -1) || (socketDestino < 1))
 		return -1;
 
 	char* buffer;
-	int16_t* largoBuffer;
+	int* largoBuffer = malloc(sizeof(int16_t));
 	buffer = empaquetarCabecera(msjCabecera, largoBuffer);
 
-	totalEnviado = enviarMsjCompleto(socketDestino, buffer, largoBuffer);
+	totalEnviado = enviarMsjCompleto(socketDestino, buffer, *largoBuffer);
 	if(totalEnviado != sizeof(t_msjCabecera)){
 		printf("Error enviando cabecera de mensaje.");
 		totalEnviado = -1;
 	}
 	else{
-		totalEnviado = enviarMsjCompleto(socketDestino, msj, msjCabecera.logitudMensaje);
-		if(totalEnviado != msjCabecera.logitudMensaje){
+		totalEnviado = enviarMsjCompleto(socketDestino, msj, msjCabecera->logitudMensaje);
+		if(totalEnviado != msjCabecera->logitudMensaje){
 			totalEnviado = -1;
 			printf("Error enviando mensaje principal.");
 		}
@@ -117,7 +117,7 @@ int enviarMsjCompleto(int socketDestino, char* buffer, int longitudMensaje) {
 	return totalEnviado;
 }
 
-char* empaquetarCabecera(t_msjCabecera* mensaje, int16_t* largo) {
+char* empaquetarCabecera(t_msjCabecera* mensaje, int* largo) {
 	char *empaquetado = malloc(sizeof(mensaje->tipoMensaje) + sizeof(mensaje->logitudMensaje));
 
 	int offset = 0, tmp_size = 0;

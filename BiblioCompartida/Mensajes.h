@@ -24,9 +24,9 @@ typedef struct{
 
 char* recibirMsjConEncabezado(int );
 int recibirMsjCompleto(int , char* , int );
-int enviarMsjConEncabezado(int , char* , t_msjCabecera );
+int enviarMsjConEncabezado(int , char* , t_msjCabecera* );
 int enviarMsjCompleto(int , char* , int );
-char* empaquetarCabecera(t_msjCabecera*, int16_t*);
+char* empaquetarCabecera(t_msjCabecera*, int*);
 t_msjCabecera* desempaquetarCabecera(char*);
 
 #endif /* MENSAJES_H_ */
