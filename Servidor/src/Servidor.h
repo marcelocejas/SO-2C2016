@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include "configuracion.h"
 #include "../BiblioCompartida/Conexiones.h"
+#include "../BiblioCompartida/Mensajes.h"
 
 
 #endif /* SERVIDOR_H_ */

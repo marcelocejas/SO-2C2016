@@ -22,7 +22,7 @@ typedef struct{
 	int unsigned logitudMensaje;
 }__attribute__((__packed__)) t_msjCabecera;
 
-char* recibirMsjConEncabezado(int );
+char* recibirMsjConEncabezado(int , t_msjCabecera*);
 int recibirMsjCompleto(int , char* , int );
 int enviarMsjConEncabezado(int , char* , t_msjCabecera* );
 int enviarMsjCompleto(int , char* , int );

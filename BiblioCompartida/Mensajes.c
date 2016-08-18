@@ -7,9 +7,8 @@
 
 #include "Mensajes.h"
 
-char* recibirMsjConEncabezado(int socketEmisor) {
+char* recibirMsjConEncabezado(int socketEmisor, t_msjCabecera* msjCabecera) {
 	int totalLeido = 0;
-	t_msjCabecera* msjCabecera;
 
 	int msjTamanio = sizeof(msjCabecera);
 	char* buffer = malloc(msjTamanio);

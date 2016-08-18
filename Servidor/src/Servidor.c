@@ -24,7 +24,8 @@ int main(void) {
 	if (socketCliente == -1) {
 		printf("Error aceptanco conexion.");
 	}
-	if (recibirMsjConEncabezado(socketCliente) == -1) {
+	t_msjCabecera* msjCabecera = malloc(sizeof(t_msjCabecera));
+	if (recibirMsjConEncabezado(socketCliente, msjCabecera) == NULL) {
 		printf("Error recibiendo mensaje.");
 	}
 	finalizarConfig();
