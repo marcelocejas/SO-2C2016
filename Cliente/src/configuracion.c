@@ -24,19 +24,19 @@ int cargarConfiguracion(char* archivoRuta, t_config_server* configCliente ) {
 	if (config_keys_amount(tConfig) == CANTIDAD_PARAMETROS_CONFIG) {
 		// Verifico que los parametros tengan sus valores OK
 		// Verifico parametro PUERTO
-		if (config_has_property(tConfig, "PUERTO")) {
+		if (config_has_property(tConfig, "PUERTO_SERVER")) {
 			configCliente->serverPuerto = config_get_int_value(tConfig, "PUERTO_SERVER");
 		} else {
 			printf("ERROR: Falta el parametro: %s. \n", "PUERTO_SERVERPUERTO_SERVER");
 			return 1;
 		}
-		if (config_has_property(tConfig, "PUERTO")) {
-			configCliente->serverPuerto = config_get_string_value(tConfig, "IP_SERVER");
+		if (config_has_property(tConfig, "IP_SERVER")) {
+			configCliente->serverIp = config_get_string_value(tConfig, "IP_SERVER");
 		} else {
 			printf("ERROR: Falta el parametro: %s. \n", "IP_SERVER");
 			return 1;
 		}
-		printf("Archivo de configuración SERVER leido:\n");
+		printf("Archivo de configuración CLIENTE leido:\n");
 		printf("===================================\n");
 		printf("SERVER PUERTO: %d\n SERVER IP: %s\n", configCliente->serverPuerto, configCliente->serverIp);
 		return 1;

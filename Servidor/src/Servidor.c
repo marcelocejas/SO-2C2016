@@ -21,16 +21,18 @@ int main(void) {
 		printf("Error creando socket servidor");
 	}
 	int socketCliente = AceptarConexionCliente(socketServer);
-	if (socketCliente == -1) {
+	if (socketCliente != -1) {
+		printf("Cliente %d conetado.", socketCliente);
+	}
+	else{
 		printf("Error aceptanco conexion.");
 	}
 	t_msjCabecera* msjCabecera = malloc(sizeof(t_msjCabecera));
 	char* msj = recibirMsjConEncabezado(socketCliente, msjCabecera);
 	if (msj != NULL) {
 		if (atenderMsjCliente(msj, msjCabecera->tipoMensaje)) {
-			printf("mensaje atendido Ok.\n");
+			printf("Mensaje atendido Ok.\n");
 		}
-		return EXIT_FAILURE;
 	} else {
 		printf("Error recibiendo mensaje.");
 		return EXIT_FAILURE;
