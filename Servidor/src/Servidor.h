@@ -14,5 +14,6 @@
 #include "../BiblioCompartida/Conexiones.h"
 #include "../BiblioCompartida/Mensajes.h"
 
+int atenderMsjCliente(char*, int);
 
 #endif /* SERVIDOR_H_ */

@@ -25,9 +25,32 @@ int main(void) {
 		printf("Error aceptanco conexion.");
 	}
 	t_msjCabecera* msjCabecera = malloc(sizeof(t_msjCabecera));
-	if (recibirMsjConEncabezado(socketCliente, msjCabecera) == NULL) {
+	char* msj = recibirMsjConEncabezado(socketCliente, msjCabecera);
+	if (msj != NULL) {
+		if (atenderMsjCliente(msj, msjCabecera->tipoMensaje)) {
+			printf("mensaje atendido Ok.\n");
+		}
+		return EXIT_FAILURE;
+	} else {
 		printf("Error recibiendo mensaje.");
+		return EXIT_FAILURE;
 	}
+
 	finalizarConfig();
+	return EXIT_SUCCESS;
+}
+
+int atenderMsjCliente(char* msj, int tipoMsj) {
+	switch (tipoMsj) {
+	case 1:
+		printf("mensaje = 1\n");
+		break;
+	case 2:
+		printf("mensaje = 2\n");
+		break;
+	default:
+		printf("No se reconoce msj\n");
+		break;
+	}
 	return EXIT_SUCCESS;
 }
