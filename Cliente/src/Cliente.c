@@ -8,10 +8,17 @@
  ============================================================================
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "Cliente.h"
+
+t_config_server* ClienteConfig;
 
 int main(void) {
-	puts("CPU Lector"); /* prints CPU Lector */
+	char* ConfigPath = "./SERVER.cfg";
+	ClienteConfig = malloc(sizeof(t_config_server));
+	cargarConfiguracion(ConfigPath, ClienteConfig);
+
+
+
+	finalizarConfig();
 	return EXIT_SUCCESS;
 }
