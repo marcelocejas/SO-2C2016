@@ -13,7 +13,7 @@
 t_config_server* ServerConfig;
 
 int main(void) {
-	char* ConfigPath = "./SERVER.cfg";
+	char* ConfigPath = "../SERVER.cfg";
 	ServerConfig = malloc(sizeof(t_config_server));
 	cargarConfiguracion(ConfigPath, ServerConfig);
 	int socketServer = IniciarSocketServidor(ServerConfig->puerto);

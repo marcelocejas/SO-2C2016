@@ -82,7 +82,7 @@ int enviarMsjConEncabezado(int socketDestino, char* msj, t_msjCabecera* msjCabec
 		totalEnviado = enviarMsjCompleto(socketDestino, msj, msjCabecera->logitudMensaje);
 		if(totalEnviado != msjCabecera->logitudMensaje){
 			totalEnviado = -1;
-			printf("Error enviando mensaje principal.");
+			printf("Error enviando mensaje principal.\n");
 		}
 	}
 	free(buffer);
@@ -125,7 +125,6 @@ char* empaquetarCabecera(t_msjCabecera* mensaje, int* largo) {
 	memcpy(empaquetado + offset, &mensaje->logitudMensaje, tmp_size = sizeof(mensaje->logitudMensaje));
 	offset += tmp_size;
 
-	offset += tmp_size;
 	*largo = offset;
 	return empaquetado;
 }
