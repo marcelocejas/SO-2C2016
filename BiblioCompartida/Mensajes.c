@@ -18,23 +18,25 @@ char* recibirMsjConEncabezado(int socketEmisor, t_msjCabecera* msjCabecera) {
 		return NULL;
 	}
 
+	t_msjCabecera* cabeceraAux;
 	if ((totalLeido = recibirMsjCompleto(socketEmisor, buffer, msjTamanio)) > 0) {
-		msjCabecera = desempaquetarCabecera(buffer);
+		cabeceraAux = desempaquetarCabecera(buffer);
 	} else {
 		printf("Error recibiendo msj cabecera");
 		free(buffer);
 		return NULL;
 	}
 
-	buffer = malloc(msjCabecera->logitudMensaje);
-	if ((totalLeido = recibirMsjCompleto(socketEmisor, buffer, msjCabecera->logitudMensaje)) < 0) {
+	buffer = malloc(cabeceraAux->logitudMensaje);
+	if ((totalLeido = recibirMsjCompleto(socketEmisor, buffer, cabeceraAux->logitudMensaje)) < 0) {
 		free(buffer);
 		return NULL;
 	}
 
-	if (totalLeido != msjCabecera->logitudMensaje)
+	if (totalLeido != cabeceraAux->logitudMensaje)
 		printf("Mensaje recibido incompleto.");
 
+	*msjCabecera = *cabeceraAux;
 	return buffer;
 }
 
@@ -136,5 +138,5 @@ t_msjCabecera* desempaquetarCabecera(char* empaquetado) {
 	offset = tmp_len;
 	memcpy(&mensaje->logitudMensaje, empaquetado + offset, tmp_len = sizeof(mensaje->logitudMensaje));
 
-	return &mensaje;
+	return mensaje;
 }
