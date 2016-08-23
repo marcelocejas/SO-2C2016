@@ -13,19 +13,24 @@
 t_config_server* ServerConfig;
 
 int main(void) {
-	char* ConfigPath = "../SERVER.cfg";
+	char* ConfigPath = "./SERVER.cfg";
 	ServerConfig = malloc(sizeof(t_config_server));
 	cargarConfiguracion(ConfigPath, ServerConfig);
 	int socketServer = IniciarSocketServidor(ServerConfig->puerto);
 	if (socketServer == -1) {
-		printf("Error creando socket servidor");
+		printf("Error creando socket servidor.\n");
+		return EXIT_FAILURE;
+	}
+	else{
+		printf("Esperando conexion.\n");
 	}
 	int socketCliente = AceptarConexionCliente(socketServer);
 	if (socketCliente != -1) {
-		printf("Cliente %d conetado.", socketCliente);
+		printf("Cliente %d conetado.\n", socketCliente);
 	}
 	else{
-		printf("Error aceptanco conexion.");
+		printf("Error aceptando conexion.\n");
+		return EXIT_FAILURE;
 	}
 	t_msjCabecera* msjCabecera = malloc(sizeof(t_msjCabecera));
 	char* msj = recibirMsjConEncabezado(socketCliente, msjCabecera);
@@ -34,7 +39,7 @@ int main(void) {
 			printf("Mensaje atendido Ok.\n");
 		}
 	} else {
-		printf("Error recibiendo mensaje.");
+		printf("Error recibiendo mensaje.\n");
 		return EXIT_FAILURE;
 	}
 

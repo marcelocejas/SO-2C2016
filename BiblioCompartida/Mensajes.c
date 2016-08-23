@@ -10,7 +10,7 @@
 char* recibirMsjConEncabezado(int socketEmisor, t_msjCabecera* msjCabecera) {
 	int totalLeido = 0;
 
-	int msjTamanio = sizeof(msjCabecera);
+	int msjTamanio = sizeof(t_msjCabecera);
 	char* buffer = malloc(msjTamanio);
 
 	if ((socketEmisor < 0) || (buffer == NULL)){
@@ -135,5 +135,6 @@ t_msjCabecera* desempaquetarCabecera(char* empaquetado) {
 	memcpy(&mensaje->tipoMensaje, empaquetado + offset, tmp_len = sizeof(mensaje->tipoMensaje));
 	offset = tmp_len;
 	memcpy(&mensaje->logitudMensaje, empaquetado + offset, tmp_len = sizeof(mensaje->logitudMensaje));
-	return mensaje;
+
+	return &mensaje;
 }
